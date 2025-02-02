@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:get/get.dart';
+import 'package:share_plus/share_plus.dart';
 
 
 class EmicalculatorController extends GetxController {
@@ -48,6 +49,24 @@ class EmicalculatorController extends GetxController {
     }
   
   }
+
+
+
+ /// 🔹 Function to Share EMI Details
+  void shareEmiSchedule(EmicalculatorController controller) {
+    String emiDetails = "EMI Schedule for ${controller.loanType.value} Loan:\n\n";
+
+    for (var row in controller.emiSchedule) {
+      emiDetails +=
+          "Month: ${row["No"]}, Payment: ${row["Payment"]}, Principal: ${row["Principal"]}, Interest: ${row["Interest"]}, Balance: ${row["Balance"]}\n";
+    }
+
+    // Share the details
+    Share.share(emiDetails);
+  }
+
+
+
 
      /// **Flat EMI Calculation*
     void _calculateFlatEmi(int timeInMonths, double monthlyRate) {

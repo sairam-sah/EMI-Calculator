@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:share_plus/share_plus.dart';
 import '../controllers/emicalculator_controller.dart';
 
 class EmiScheduleView extends StatelessWidget {
@@ -19,8 +20,14 @@ class EmiScheduleView extends StatelessWidget {
         title: const Text("EMI Schedule"),
         centerTitle: true,
         actions: [
-          IconButton(icon: const Icon(Icons.share), onPressed: () {}),
-          IconButton(icon: const Icon(Icons.print), onPressed: () {}),
+          IconButton(icon: const Icon(Icons.share),
+          color: Colors.blueAccent,
+           onPressed: () {
+            shareEmiSchedule(controller);
+           }),
+          IconButton(icon: const Icon(Icons.print),
+           color: Colors.blueAccent,
+           onPressed: () {}),
         ],
       ),
       body: Padding(
@@ -78,7 +85,7 @@ class EmiScheduleView extends StatelessWidget {
 
     return DataRow(
         color:
-            MaterialStateProperty.all(const Color.fromARGB(255, 160, 221, 92)),
+           MaterialStateProperty.all(const Color.fromARGB(255, 57, 255, 20)), // Neon Green
         cells: [
           const DataCell(
               Text("Total", style: TextStyle(fontWeight: FontWeight.bold))),
@@ -89,3 +96,18 @@ class EmiScheduleView extends StatelessWidget {
         ]);
   }
 }
+
+
+
+ /// 🔹 Function to Share EMI Details
+  void shareEmiSchedule(EmicalculatorController controller) {
+    String emiDetails = "EMI Schedule for ${controller.loanType.value} Loan:\n\n";
+
+    for (var row in controller.emiSchedule) {
+      emiDetails +=
+          "Month: ${row["No"]}, Payment: ${row["Payment"]}, Principal: ${row["Principal"]}, Interest: ${row["Interest"]}, Balance: ${row["Balance"]}\n";
+    }
+
+    // Share the details
+    Share.share(emiDetails);
+  }

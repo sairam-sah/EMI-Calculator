@@ -11,7 +11,7 @@ class EmicalculatorView extends GetView<EmicalculatorController> {
   @override
   Widget build(BuildContext context) {
     // Retrieve the loan type from arguments
-    final String loanType = Get.arguments ?? 'EMI Schedule';
+    final String loanType = Get.arguments ?? 'Easy EMI';
     
 
     return Scaffold(
