@@ -38,7 +38,7 @@ class HomeView extends GetView<HomeController> {
                 ),
               ),
               onPressed: () =>
-                  Get.toNamed(Routes.EMICALCULATOR, arguments: 'Flat'),
+                  Get.toNamed(Routes.EMICALCULATOR, arguments: 'Flat Interest Loan'),
             ),
             const SizedBox(height: 20),
             ElevatedButton.icon(
@@ -58,7 +58,7 @@ class HomeView extends GetView<HomeController> {
                 ),
               ),
               onPressed: () =>
-                  Get.toNamed(Routes.EMICALCULATOR, arguments: 'Declining'),
+                  Get.toNamed(Routes.EMICALCULATOR, arguments: 'Declining Interest Loan'),
             ),
             const SizedBox(height: 20),
             ElevatedButton.icon(
@@ -77,7 +77,7 @@ class HomeView extends GetView<HomeController> {
                 ),
               ),
               onPressed: () =>
-                   Get.toNamed(Routes.EMICALCULATOR, arguments: 'Interest_Only'),
+                   Get.toNamed(Routes.EMICALCULATOR, arguments: 'Interest-Only Loan'),
             ),
           ],
         ),

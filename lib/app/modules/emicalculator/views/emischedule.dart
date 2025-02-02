@@ -17,16 +17,18 @@ class EmiScheduleView extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("EMI Schedule"),
+         iconTheme: IconThemeData(color: Colors.white), 
+        backgroundColor: Colors.blueAccent,
+        title: const Text("EMI Schedule",style:TextStyle(color: Colors.white)),
         centerTitle: true,
         actions: [
           IconButton(icon: const Icon(Icons.share),
-          color: Colors.blueAccent,
+          color: Colors.white,
            onPressed: () {
             shareEmiSchedule(controller);
            }),
           IconButton(icon: const Icon(Icons.print),
-           color: Colors.blueAccent,
+           color: Colors.white,
            onPressed: () {}),
         ],
       ),

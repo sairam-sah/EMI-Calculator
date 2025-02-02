@@ -16,7 +16,9 @@ class EmicalculatorView extends GetView<EmicalculatorController> {
 
     return Scaffold(
       appBar: AppBar(
-        title:  Text(loanType),
+         iconTheme: IconThemeData(color: Colors.white), 
+        backgroundColor: Colors.blueAccent,
+        title:  Text(loanType,style: TextStyle(color: Colors.white),),
         centerTitle: true,
       ),
       body: Padding(
@@ -76,11 +78,23 @@ class EmicalculatorView extends GetView<EmicalculatorController> {
               ],
             ),
             SizedBox(height: 20),
-            ElevatedButton(
+             ElevatedButton.icon(
+              label: const Text(
+                "Calculate EMI",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              style: ElevatedButton.styleFrom(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 10, horizontal: 100),
+                backgroundColor: Colors.blueAccent, // Change to your preferred color
+                foregroundColor: Colors.white, // Text & Icon Color
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
               onPressed: () {
-                controller.calculateEmi();
 
-                // If there is an error message, show a SnackBar instead of navigating
+                  // If there is an error message, show a SnackBar instead of navigating
                 if (controller.errorMessage.value.isNotEmpty) {
                   Get.snackbar(
                     "Error",
@@ -91,10 +105,9 @@ class EmicalculatorView extends GetView<EmicalculatorController> {
                   );
                   return;
                 }
-                // Only navigate if there are no errors
-                Get.to(() => EmiScheduleView(),arguments: controller.loanType.value);
-              },
-              child: const Text('Calculate EMI'),
+                  controller.calculateEmi();
+                   Get.to(() => EmiScheduleView(),arguments: controller.loanType.value);
+              }
             ),
           ],
         ),
