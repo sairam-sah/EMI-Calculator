@@ -1,6 +1,5 @@
 import 'dart:math';
 import 'package:get/get.dart';
-import 'package:share_plus/share_plus.dart';
 
 
 class EmicalculatorController extends GetxController {
@@ -11,7 +10,7 @@ class EmicalculatorController extends GetxController {
   var rate = 8.5.obs;
   var tenure = 120.obs;
   var tenureInMonths = true.obs;
-  var loanType = 'Flat'.obs; // Default loan type
+  var loanType = 'Flat Interest Loan'.obs; // Default loan type
 
   // Output fields
   var emi = 0.0.obs;
@@ -20,49 +19,29 @@ class EmicalculatorController extends GetxController {
   var emiSchedule = <Map<String, String>>[].obs;
 
   void calculateEmi() {
+    
   // Ensure input fields have values
-  if (principal.value == 100000.0 && GetUtils.isNullOrBlank(Get.arguments) == true) {
-    errorMessage.value = "Please enter a valid loan amount.";
+ if (principal.value <= 0 || rate.value <= 0 || tenure.value <= 0) {
+    errorMessage.value = "Please enter valid values for all fields.";
     return;
   }
-  if (rate.value == 8.5 && GetUtils.isNullOrBlank(Get.arguments) == true) {
-    errorMessage.value = "Please enter a valid interest rate.";
-    return;
-  }
-  if (tenure.value == 120 && GetUtils.isNullOrBlank(Get.arguments) == true) {
-    errorMessage.value = "Please enter a valid tenure.";
-    return;
-  }
-
    // Clear any previous error messages
   errorMessage.value = "";
 
     final double monthlyRate = rate.value / 12 / 100;
     final int timeInMonths = tenureInMonths.value ? tenure.value : tenure.value * 12;
     
-       if (loanType.value == 'Flat') {
+       if (loanType.value == 'Flat Interest Loan') {
       _calculateFlatEmi(timeInMonths, monthlyRate);
-    } else if (loanType.value == 'Declining') {
+       _generateFlatEmiSchedule(timeInMonths, monthlyRate);
+    } else if (loanType.value == 'Declining Interest Loan') {
       _calculateDecliningEmi(timeInMonths, monthlyRate);
-    } else if (loanType.value == 'Interest_Only') {
+       _generateDecliningEmiSchedule( timeInMonths, monthlyRate);
+    } else if (loanType.value == 'Interest-Only Loan') {
       _calculateInterestOnlyEmi(timeInMonths, monthlyRate);
+      _generateInterestOnlyEmiSchedule( timeInMonths, monthlyRate);
     }
   
-  }
-
-
-
- /// 🔹 Function to Share EMI Details
-  void shareEmiSchedule(EmicalculatorController controller) {
-    String emiDetails = "EMI Schedule for ${controller.loanType.value} Loan:\n\n";
-
-    for (var row in controller.emiSchedule) {
-      emiDetails +=
-          "Month: ${row["No"]}, Payment: ${row["Payment"]}, Principal: ${row["Principal"]}, Interest: ${row["Interest"]}, Balance: ${row["Balance"]}\n";
-    }
-
-    // Share the details
-    Share.share(emiDetails);
   }
 
 
@@ -81,7 +60,7 @@ class EmicalculatorController extends GetxController {
     totalPayment.value = emi.value * timeInMonths;
     totalInterest.value = totalPayment.value - principal.value;
 
-    _generateFlatEmiSchedule(timeInMonths, monthlyRate);
+   
   }
 
   /// **Declining EMI Calculation**
@@ -111,6 +90,8 @@ class EmicalculatorController extends GetxController {
 
       if (remainingBalance <= 0) break;
     }
+
+   
   }
 
 /// **Interest-Only EMI Calculation (Corrected)**
@@ -142,6 +123,7 @@ class EmicalculatorController extends GetxController {
         "Balance": (month == timeInMonths ? "0.00" : principal.value.toStringAsFixed(2)),
       });
     }
+     
   }
 
   /// **Flat EMI Schedule Generation**
@@ -167,12 +149,58 @@ class EmicalculatorController extends GetxController {
     }
   }
 
+void _generateDecliningEmiSchedule(int timeInMonths, double monthlyRate) {
+  emiSchedule.clear();
+  double remainingBalance = principal.value;
+  double principalComponent = principal.value / timeInMonths;
+
+  for (int month = 1; month <= timeInMonths; month++) {
+    double interest = remainingBalance * monthlyRate;
+    double emiValue = principalComponent + interest;
+
+    remainingBalance -= principalComponent;
+
+    emiSchedule.add({
+      "No": month.toString(),
+      "Payment": emiValue.toStringAsFixed(2),
+      "Principal": principalComponent.toStringAsFixed(2),
+      "Interest": interest.toStringAsFixed(2),
+      "Balance": remainingBalance.isNegative ? "0.00" : remainingBalance.toStringAsFixed(2),
+    });
+
+    if (remainingBalance <= 0) break;
+  }
+}
+
+void _generateInterestOnlyEmiSchedule(int timeInMonths, double monthlyRate) {
+  emiSchedule.clear();
+  double monthlyInterest = principal.value * monthlyRate;
+
+  for (int month = 1; month <= timeInMonths; month++) {
+    double emiValue = monthlyInterest;
+
+    // Last month: Pay both interest and principal
+    if (month == timeInMonths) {
+      emiValue += principal.value;
+    }
+
+    emiSchedule.add({
+      "No": month.toString(),
+      "Payment": emiValue.toStringAsFixed(2),
+      "Principal": (month == timeInMonths ? principal.value.toStringAsFixed(2) : "0.00"),
+      "Interest": monthlyInterest.toStringAsFixed(2),
+      "Balance": (month == timeInMonths ? "0.00" : principal.value.toStringAsFixed(2)),
+    });
+  }
+}
+
 
 
 
   
   @override
   void onInit() {
+    loanType.value = Get.arguments ?? 'Flat Interest Loan';
     super.onInit();
   }
 
