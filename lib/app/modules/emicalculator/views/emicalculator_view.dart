@@ -12,13 +12,15 @@ class EmicalculatorView extends GetView<EmicalculatorController> {
   Widget build(BuildContext context) {
     // Retrieve the loan type from arguments
     final String loanType = Get.arguments ?? 'Easy EMI';
-    
 
     return Scaffold(
       appBar: AppBar(
-         iconTheme: IconThemeData(color: Colors.white), 
+        iconTheme: IconThemeData(color: Colors.white),
         backgroundColor: Colors.blueAccent,
-        title:  Text(loanType,style: TextStyle(color: Colors.white),),
+        title: Text(
+          loanType,
+          style: TextStyle(color: Colors.white),
+        ),
         centerTitle: true,
       ),
       body: Padding(
@@ -78,36 +80,39 @@ class EmicalculatorView extends GetView<EmicalculatorController> {
               ],
             ),
             SizedBox(height: 20),
-             ElevatedButton.icon(
-              label: const Text(
-                "Calculate EMI",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              style: ElevatedButton.styleFrom(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 10, horizontal: 100),
-                backgroundColor: Colors.blueAccent, // Change to your preferred color
-                foregroundColor: Colors.white, // Text & Icon Color
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-              onPressed: () {
-
-                  // If there is an error message, show a SnackBar instead of navigating
-                if (controller.errorMessage.value.isNotEmpty) {
-                  Get.snackbar(
-                    "Error",
-                    controller.errorMessage.value,
-                    snackPosition: SnackPosition.BOTTOM,
-                    backgroundColor: Colors.red,
-                    colorText: Colors.white,
-                  );
-                  return;
-                }
-                  controller.calculateEmi();
-                   Get.to(() => EmiScheduleView(),arguments: controller.loanType.value);
-              }
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                  label: const Text(
+                    "Calculate EMI",
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 10, horizontal: 100),
+                    backgroundColor:
+                        Colors.blueAccent, // Change to your preferred color
+                    foregroundColor: Colors.white, // Text & Icon Color
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  onPressed: () {
+                    // If there is an error message, show a SnackBar instead of navigating
+                    if (controller.errorMessage.value.isNotEmpty) {
+                      Get.snackbar(
+                        "Error",
+                        controller.errorMessage.value,
+                        snackPosition: SnackPosition.BOTTOM,
+                        backgroundColor: Colors.red,
+                        colorText: Colors.white,
+                      );
+                      return;
+                    }
+                    controller.calculateEmi();
+                    Get.to(() => EmiScheduleView(),
+                        arguments: controller.loanType.value);
+                  }),
             ),
           ],
         ),

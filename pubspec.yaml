@@ -37,7 +37,8 @@ dependencies:
   get: ^4.6.6
   intl: ^0.20.2
   share_plus: ^10.1.4
-  video_player: ^2.9.2
+  printing: ^5.14.2
+  pdf: ^3.11.3
 
 dev_dependencies:
   flutter_test:
@@ -63,7 +64,7 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-    - assets/Limited time offer.mp4
+    - assets/
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

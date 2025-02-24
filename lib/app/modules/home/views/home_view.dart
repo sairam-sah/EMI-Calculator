@@ -16,11 +16,16 @@ class HomeView extends GetView<HomeController> {
         backgroundColor: Colors.blueAccent,
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.3,
+              width: MediaQuery.of(context).size.width * 0.8,
+              child: Image.asset('assets/emi.png',fit: BoxFit.cover,)),
+              const SizedBox(height: 20),
             ElevatedButton.icon(
               icon:
                   const Icon(Icons.account_balance, size: 28), // Flat Loan Icon
