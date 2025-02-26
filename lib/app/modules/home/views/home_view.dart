@@ -14,6 +14,9 @@ class HomeView extends GetView<HomeController> {
         title: const Text('Easy EMI',style:TextStyle(color: Colors.white),),
         centerTitle: true,
         backgroundColor: Colors.blueAccent,
+        leading: Container(
+          padding: EdgeInsets.all(5),
+          child: Image.asset('assets/logo_refresh.png',)),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
@@ -84,15 +87,25 @@ class HomeView extends GetView<HomeController> {
               onPressed: () =>
                    Get.toNamed(Routes.EMICALCULATOR, arguments: 'Interest-Only Loan'),
             ),
+            SizedBox(height: 30,),
+            Align(
+              alignment: Alignment.bottomRight,
+              child: InkWell(
+                onTap: () {
+                   Get.toNamed(Routes.CALCULATOR);
+                },child:Image.asset('assets/cal.png',height: 100,) ,
+              ),
+            )
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.blueAccent,
-        onPressed: (){
-        Get.toNamed(Routes.CALCULATOR);
-      },child: Icon(Icons.add,color: Colors.white,),
-      ),
+      bottomNavigationBar: BottomAppBar(
+        color: Colors.blueAccent,
+        child: Column(children:[
+         Text('Copyright © 2025M & MB Soft Tech',style: TextStyle(color: Colors.white,fontSize: 18),),
+         Text('All Rights Reserved',style: TextStyle(color: Colors.white,fontSize: 18),)    
+        ] 
+      ),)
     );
   }
 }

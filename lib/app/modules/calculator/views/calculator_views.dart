@@ -12,7 +12,7 @@ const Color colorDark = Color(0xFF374352);
 const Color colorLight = Color(0xFFe6eeff);
 
 class _CalculatorState extends State<Calculator> {
-  bool darkMode = true;
+  bool darkMode = false;
   String userInput = '';
   String result = '';
 
