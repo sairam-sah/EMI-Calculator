@@ -6,6 +6,8 @@ abstract class Routes {
   static const HOME = _Paths.HOME;
   static const EMICALCULATOR = _Paths.EMICALCULATOR;
   static const EMISCHEDULE = _Paths.EMISCHEDULE;
+  static const CALCULATOR = _Paths.CALCULATOR;
+
 }
 
 abstract class _Paths {
@@ -13,4 +15,5 @@ abstract class _Paths {
   static const HOME = '/home';
   static const EMICALCULATOR = '/emicalculator';
   static const EMISCHEDULE = '/emischedule';
+  static const CALCULATOR = '/calculator';
 }

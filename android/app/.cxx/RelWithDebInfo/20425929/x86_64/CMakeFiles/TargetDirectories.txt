@@ -1,0 +1,2 @@
+/Users/sairamsah/personal/EMI-Calculator/android/app/.cxx/RelWithDebInfo/20425929/x86_64/CMakeFiles/edit_cache.dir
+/Users/sairamsah/personal/EMI-Calculator/android/app/.cxx/RelWithDebInfo/20425929/x86_64/CMakeFiles/rebuild_cache.dir

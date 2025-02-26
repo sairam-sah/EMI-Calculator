@@ -46,7 +46,7 @@ class EmicalculatorController extends GetxController {
   /// **Flat EMI Calculation*
   void _calculateFlatEmi(int timeInMonths, double monthlyRate) {
     if (monthlyRate == 0) {
-      emi.value = principal.value / timeInMonths;
+      emi.value = roundToTwoDecimals(principal.value / timeInMonths);
     } else {
       final double numerator = monthlyRate * pow(1 + monthlyRate, timeInMonths);
       final double denominator = pow(1 + monthlyRate, timeInMonths) - 1;
@@ -61,19 +61,17 @@ class EmicalculatorController extends GetxController {
     emiSchedule.clear();
 
     for (int month = 1; month <= timeInMonths; month++) {
-      // Calculate monthly interest
       double monthlyInterest = remainingPrincipal * monthlyRate;
       double principalComponent = emi.value - monthlyInterest;
 
       // In the final month, adjust the principal component to clear the remaining balance
       if (month == timeInMonths) {
-        principalComponent =
-            remainingPrincipal; // Pay off the remaining balance
+        principalComponent =remainingPrincipal; // Pay off the remaining balance
         emi.value = principalComponent + monthlyInterest; // Final EMI
       }
 
-      // Update remaining principal after payment
-      remainingPrincipal = remainingPrincipal - principalComponent;
+      remainingPrincipal = double.parse((remainingPrincipal - principalComponent).toStringAsFixed(2));
+
 
       // Add schedule details for the month
       emiSchedule.add({
@@ -132,7 +130,7 @@ class EmicalculatorController extends GetxController {
   /// **Interest-Only EMI Calculation (Corrected)**
   void _calculateInterestOnlyEmi(int timeInMonths, double monthlyRate) {
     emiSchedule.clear();
-    double monthlyInterest = principal.value * monthlyRate;
+    double monthlyInterest = roundToTwoDecimals(principal.value * monthlyRate);
     totalInterest.value = 0.0;
     totalPayment.value = 0.0;
 
@@ -166,6 +164,16 @@ class EmicalculatorController extends GetxController {
 
   /// **Flat EMI Schedule Generation**
   void _generateFlatEmiSchedule(int timeInMonths, double monthlyRate) {
+    if (monthlyRate == 0) {
+      emi.value = principal.value / timeInMonths;
+    } else {
+      final double numerator = monthlyRate * pow(1 + monthlyRate, timeInMonths);
+      final double denominator = pow(1 + monthlyRate, timeInMonths) - 1;
+      emi.value = principal.value * (numerator / denominator);
+    }
+     totalPayment.value = emi.value * timeInMonths;
+    totalInterest.value = totalPayment.value - principal.value;
+
     emiSchedule.clear();
     double remainingPrincipal = principal.value;
 
@@ -173,7 +181,13 @@ class EmicalculatorController extends GetxController {
       double monthlyInterest = remainingPrincipal * monthlyRate;
       double principalComponent = emi.value - monthlyInterest;
 
-      remainingPrincipal -= principalComponent;
+       if (month == timeInMonths) {
+        principalComponent =remainingPrincipal; // Pay off the remaining balance
+        emi.value = principalComponent + monthlyInterest; // Final EMI
+      }
+
+      remainingPrincipal = double.parse((remainingPrincipal - principalComponent).toStringAsFixed(2));
+
 
       emiSchedule.add({
         "No": month.toString(),

@@ -1,3 +1,5 @@
+import 'package:easyemi/app/modules/calculator/binding/calculator_binding.dart';
+import 'package:easyemi/app/modules/calculator/views/calculator_views.dart';
 import 'package:get/get.dart';
 
 import '../modules/emicalculator/bindings/emicalculator_binding.dart';
@@ -22,6 +24,11 @@ class AppPages {
       name: _Paths.EMICALCULATOR,
       page: () => const EmicalculatorView(),
       binding: EmicalculatorBinding(),
+    ),
+     GetPage(
+      name: _Paths.CALCULATOR,
+      page: () => const Calculator(),
+      binding: CalculatorBinding(),
     ),
   ];
 }

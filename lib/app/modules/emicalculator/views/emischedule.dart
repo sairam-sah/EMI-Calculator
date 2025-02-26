@@ -46,42 +46,44 @@ class EmiScheduleView extends StatelessWidget {
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(5),
-        child: Obx(() => Column(children: [
-              Expanded(
-                child: Scrollbar(
-                  thumbVisibility: true,
-                  child: SingleChildScrollView(
-                    child: DataTable(
-                      columnSpacing: 15,
-                      border: TableBorder.all(),
-                      columns: const [
-                        DataColumn(label: Text("No.")),
-                        DataColumn(label: Text("Payment")),
-                        DataColumn(label: Text("Principal")),
-                        DataColumn(label: Text("Interest")),
-                        DataColumn(label: Text("Balance")),
-                      ],
-                      rows: controller.emiSchedule
-                          .map((row) => DataRow(cells: [
-                                DataCell(Text(row["No"].toString())),
-                                DataCell(Text(formatter
-                                    .format(double.parse(row["Payment"]!)))),
-                                DataCell(Text(formatter
-                                    .format(double.parse(row["Principal"]!)))),
-                                DataCell(Text(formatter
-                                    .format(double.parse(row["Interest"]!)))),
-                                DataCell(Text(formatter
-                                    .format(double.parse(row["Balance"]!)))),
-                              ]))
-                          .toList()
-                        ..add(_buildTotalRow(controller)),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(5),
+          child: Obx(() => Column(children: [
+                Expanded(
+                  child: Scrollbar(
+                    thumbVisibility: true,
+                    child: SingleChildScrollView(
+                      child: DataTable(
+                        columnSpacing: 15,
+                        border: TableBorder.all(),
+                        columns: const [
+                          DataColumn(label: Text("No.")),
+                          DataColumn(label: Text("Payment")),
+                          DataColumn(label: Text("Principal")),
+                          DataColumn(label: Text("Interest")),
+                          DataColumn(label: Text("Balance")),
+                        ],
+                        rows: controller.emiSchedule
+                            .map((row) => DataRow(cells: [
+                                  DataCell(Text(row["No"].toString())),
+                                  DataCell(Text(formatter
+                                      .format(double.parse(row["Payment"]!)))),
+                                  DataCell(Text(formatter
+                                      .format(double.parse(row["Principal"]!)))),
+                                  DataCell(Text(formatter
+                                      .format(double.parse(row["Interest"]!)))),
+                                  DataCell(Text(formatter
+                                      .format(double.parse(row["Balance"]!)))),
+                                ]))
+                            .toList()
+                          ..add(_buildTotalRow(controller)),
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ])),
+              ])),
+        ),
       ),
     );
   }

@@ -87,6 +87,12 @@ class HomeView extends GetView<HomeController> {
           ],
         ),
       ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.blueAccent,
+        onPressed: (){
+        Get.toNamed(Routes.CALCULATOR);
+      },child: Icon(Icons.add,color: Colors.white,),
+      ),
     );
   }
 }
