@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:math_expressions/math_expressions.dart';
 
 class Calculator extends StatefulWidget {
@@ -16,73 +17,91 @@ class _CalculatorState extends State<Calculator> {
   String userInput = '';
   String result = '';
 
+final NumberFormat formatter = NumberFormat('#,##0.00');
+
   void _onButtonPressed(String value) {
     setState(() {
       if (value == 'C') {
         userInput = '';
-        result = '0';
+        result = '';
       } else if (value == '⌫') {
         if (userInput.isNotEmpty) {
           userInput = userInput.substring(0, userInput.length - 1);
+        }
+        if(userInput.isEmpty){
+          result = '';
         }
       } else if (value == '=') {
         if (userInput.isNotEmpty) {
           result = _calculateResult();
         }
       } else {
-        userInput += value;
+        if(userInput.length < 105){
+         userInput += value;
+        }
+        if(result.length > 54){
+          result = '';
+        }
       }
     });
   }
 
   String _calculateResult() {
     try {
-      String processedInput =
-          userInput.replaceAll('x', '*');
-   
- RegExp percentageRegex = RegExp(r'(\d+(\.\d+)?)(%)');
-    while (processedInput.contains('%')) {
-      Match? match = percentageRegex.firstMatch(processedInput);
-      if (match != null) {
-        double percentageValue = double.parse(match.group(1)!);
-        int matchStartIndex = match.start;
-        double precedingNumber = 0;
+      String processedInput = userInput.replaceAll('x', '*');
+     processedInput = processedInput.replaceAllMapped(RegExp(r'√\((.*?)\)'), (match) {
+      return '(${match.group(1)})^(0.5)';
+    });
+      RegExp percentageRegex = RegExp(r'(\d+(\.\d+)?)(%)');
+      while (processedInput.contains('%')) {
+        Match? match = percentageRegex.firstMatch(processedInput);
+        if (match != null) {
+          double percentageValue = double.parse(match.group(1)!);
+          int matchStartIndex = match.start;
+          double precedingNumber = 0;
 
-        // Find the preceding number
-        RegExp precedingNumberRegex = RegExp(r'(\d+(\.\d+)?)(?!%)');
-        Iterable<Match> precedingMatches =
-            precedingNumberRegex.allMatches(processedInput.substring(0, matchStartIndex)).toList().reversed;
+          // Find the preceding number
+          RegExp precedingNumberRegex = RegExp(r'(\d+(\.\d+)?)(?!%)');
+          Iterable<Match> precedingMatches = precedingNumberRegex
+              .allMatches(processedInput.substring(0, matchStartIndex))
+              .toList()
+              .reversed;
 
-        if (precedingMatches.isNotEmpty) {
-          precedingNumber = double.parse(precedingMatches.first.group(1)!);
-        } else {
+          if (precedingMatches.isNotEmpty) {
+            precedingNumber = double.parse(precedingMatches.first.group(1)!);
+          } else {
             //if there is no preceding number, the percentage is simply the value divided by 100.
             precedingNumber = 1;
+          }
+
+          double calculatedPercentage =
+              (percentageValue / 100.0) * precedingNumber;
+
+          processedInput = processedInput.replaceRange(
+            match.start,
+            match.end,
+            calculatedPercentage.toString(),
+          );
+        } else {
+          break;
         }
-
-        double calculatedPercentage = (percentageValue / 100.0) * precedingNumber;
-
-        processedInput = processedInput.replaceRange(
-          match.start,
-          match.end,
-          calculatedPercentage.toString(),
-        );
-      } else {
-        break;
       }
-    }
 
       Parser p = Parser();
       Expression exp = p.parse(processedInput);
       ContextModel cm = ContextModel();
+      cm.bindVariable(Variable('e'), Number(2.71828));
+      p.parse(processedInput);
       double eval = exp.evaluate(EvaluationType.REAL, cm);
 
-      return eval.toString();
+      return formatter.format( eval);
+     
     } catch (e) {
       return 'Error';
     }
   }
 
+ 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -95,11 +114,20 @@ class _CalculatorState extends State<Calculator> {
         backgroundColor: Colors.blueAccent,
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
-          color: Colors.white,
+          color: colorLight,
           onPressed: () {
             Navigator.pop(context);
           },
         ),
+        actions: [
+          GestureDetector(
+              onTap: () {
+                setState(() {
+                  darkMode = !darkMode;
+                });
+              },
+              child: _switchMode()),
+        ],
       ),
       backgroundColor: darkMode ? colorDark : colorLight,
       body: SafeArea(
@@ -108,50 +136,43 @@ class _CalculatorState extends State<Calculator> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Container(
+                  Expanded(
                     child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  darkMode = !darkMode;
-                                });
-                              },
-                              child: _switchMode()),
-                          SizedBox(
-                            height: 80,
-                          ),
                           Align(
                             alignment: Alignment.centerRight,
-                            child: SingleChildScrollView(
-                              scrollDirection: Axis.horizontal,
-                              child: Row(
-                                children: [Text(
+                            child: SizedBox(
+                              width: double.infinity,
+                              child:
+                                  Wrap(alignment: WrapAlignment.end, children: [
+                                Text(
                                   userInput,
                                   style: TextStyle(
                                       fontWeight: FontWeight.bold,
-                                      fontSize: 55,
+                                      fontSize: userInput.length > 22 ? 30 : 55,
                                       color:
                                           darkMode ? Colors.white : Colors.red),
-                                ),]
-                              ),
+                                ),
+                              ]),
                             ),
                           ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
+                          Align(
+                            alignment: Alignment
+                                .bottomRight, // Fixes result at the bottom right
+                            child: Wrap(
+                              alignment: WrapAlignment.end,
+                              children: [
+                                Text(
                                 result,
                                 style: TextStyle(
-                                    fontSize: 35,
-                                    color:
-                                        darkMode ? Colors.green : Colors.grey),
+                                  fontSize: userInput.length > 22 ? 30 : 40,
+                                  fontWeight: FontWeight.bold,
+                                  color: darkMode ? Colors.green : Colors.grey,
+                                ),
                               ),
-                            ],
-                          ),
-                          SizedBox(
-                            height: 10,
+                              ]
+                            ),
                           ),
                         ]),
                   ),
@@ -160,7 +181,7 @@ class _CalculatorState extends State<Calculator> {
                   Column(
                     children: [
                       // _buildRowOval(['sin', 'cos', 'tan', 'log']),
-                      _buildRow(['ln', '(', ')', '^']),
+                      _buildRow(['e', '(', ')', '^']),
                       _buildRow(['C', '%', '⌫', '/']),
                       _buildRow(['7', '8', '9', 'x']),
                       _buildRow(['4', '5', '6', '-']),
@@ -266,26 +287,26 @@ class _CalculatorState extends State<Calculator> {
   // }
 
   Widget _switchMode() {
-    return NeuContainer(
-        darkMode: darkMode,
-        borderRadius: BorderRadius.circular(10),
-        padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-        child: Container(
-          width: 70,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Icon(
-                Icons.wb_sunny,
-                color: darkMode ? Colors.grey : Colors.redAccent,
-              ),
-              Icon(
-                Icons.nightlight_round,
-                color: darkMode ? Colors.green : Colors.grey,
-              )
-            ],
+    return Container(
+      margin: EdgeInsets.all(10),
+      padding: EdgeInsets.all(5),
+      width: 80,
+      decoration: BoxDecoration(
+          color: Colors.white, borderRadius: BorderRadius.circular(10)),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Icon(
+            Icons.wb_sunny,
+            color: darkMode ? Colors.grey : Colors.redAccent,
           ),
-        ));
+          Icon(
+            Icons.nightlight_round,
+            color: darkMode ? Colors.green : Colors.grey,
+          )
+        ],
+      ),
+    );
   }
 }
 

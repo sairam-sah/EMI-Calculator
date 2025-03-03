@@ -1,14 +1,21 @@
-import 'package:easyemi/app/modules/emicalculator/controllers/shareemi.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+
 import '../controllers/emicalculator_controller.dart';
 import '../controllers/printemi.dart';
+import '../controllers/shareemi.dart';
 
-class EmiScheduleView extends StatelessWidget {
-  EmiScheduleView({Key? key}) : super(key: key);
+class EmiScheduleView extends StatefulWidget {
+  const EmiScheduleView({Key? key}) : super(key: key);
 
+  @override
+  State<EmiScheduleView> createState() => _EmiScheduleViewState();
+}
+
+class _EmiScheduleViewState extends State<EmiScheduleView> {
   final NumberFormat formatter = NumberFormat('#,##0.00');
+  final ScrollController _scrollController = ScrollController(); // ✅ Defined here
 
   @override
   Widget build(BuildContext context) {
@@ -17,22 +24,23 @@ class EmiScheduleView extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        iconTheme: IconThemeData(color: Colors.white),
+        iconTheme: const IconThemeData(color: Colors.white),
         backgroundColor: Colors.blueAccent,
         title:
             const Text("EMI Schedule", style: TextStyle(color: Colors.white)),
         centerTitle: true,
         actions: [
           IconButton(
-              icon: const Icon(Icons.share),
-              color: Colors.white,
-              onPressed: () async {
-                  if (controller.emiSchedule.isNotEmpty) {
+            icon: const Icon(Icons.share),
+            color: Colors.white,
+            onPressed: () async {
+              if (controller.emiSchedule.isNotEmpty) {
                 await shareEmiSchedule(controller);
               } else {
                 print("No EMI schedule available for printing.");
               }
-              }),
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.print),
             color: Colors.white,
@@ -49,40 +57,48 @@ class EmiScheduleView extends StatelessWidget {
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(5),
-          child: Obx(() => Column(children: [
-                Expanded(
-                  child: Scrollbar(
-                    thumbVisibility: true,
-                    child: SingleChildScrollView(
-                      child: DataTable(
-                        columnSpacing: 15,
-                        border: TableBorder.all(),
-                        columns: const [
-                          DataColumn(label: Text("No.")),
-                          DataColumn(label: Text("Payment")),
-                          DataColumn(label: Text("Principal")),
-                          DataColumn(label: Text("Interest")),
-                          DataColumn(label: Text("Balance")),
-                        ],
-                        rows: controller.emiSchedule
-                            .map((row) => DataRow(cells: [
-                                  DataCell(Text(row["No"].toString())),
-                                  DataCell(Text(formatter
-                                      .format(double.parse(row["Payment"]!)))),
-                                  DataCell(Text(formatter
-                                      .format(double.parse(row["Principal"]!)))),
-                                  DataCell(Text(formatter
-                                      .format(double.parse(row["Interest"]!)))),
-                                  DataCell(Text(formatter
-                                      .format(double.parse(row["Balance"]!)))),
-                                ]))
-                            .toList()
-                          ..add(_buildTotalRow(controller)),
+          child: Obx(() => Column(
+                children: [
+                  Expanded(
+                    child: Scrollbar(
+                      controller: _scrollController, // ✅ No more undefined error
+                      thumbVisibility: true,
+                      child: SingleChildScrollView(
+                        controller: _scrollController,
+                        scrollDirection: Axis.vertical,
+                        child: SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: DataTable(
+                            columnSpacing: 15,
+                            border: TableBorder.all(),
+                            columns: const [
+                              DataColumn(label: Text("No.")),
+                              DataColumn(label: Text("Payment")),
+                              DataColumn(label: Text("Principal")),
+                              DataColumn(label: Text("Interest")),
+                              DataColumn(label: Text("Balance")),
+                            ],
+                            rows: controller.emiSchedule
+                                .map((row) => DataRow(cells: [
+                                      DataCell(Text(row["No"].toString())),
+                                      DataCell(Text(formatter.format(
+                                          double.parse(row["Payment"]!)))),
+                                      DataCell(Text(formatter.format(
+                                          double.parse(row["Principal"]!)))),
+                                      DataCell(Text(formatter.format(
+                                          double.parse(row["Interest"]!)))),
+                                      DataCell(Text(formatter.format(
+                                          double.parse(row["Balance"]!)))),
+                                    ]))
+                                .toList()
+                              ..add(_buildTotalRow(controller)),
+                          ),
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ])),
+                ],
+              )),
         ),
       ),
     );
@@ -109,7 +125,3 @@ class EmiScheduleView extends StatelessWidget {
         ]);
   }
 }
-
-
-
-

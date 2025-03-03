@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../routes/app_pages.dart';
 import '../controllers/home_controller.dart';
@@ -101,8 +102,21 @@ class HomeView extends GetView<HomeController> {
       ),
       bottomNavigationBar: BottomAppBar(
         color: Colors.blueAccent,
-        child: Column(children:[
-         Text('Copyright © 2025M & MB Soft Tech',style: TextStyle(color: Colors.white,fontSize: 18),),
+        child: Column(mainAxisAlignment: MainAxisAlignment.center,
+          children:[
+         Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children:[        
+          Text('Copyright © ${DateTime.now().year}',style: TextStyle(color: Colors.white,fontSize: 18),),
+          InkWell(onTap: () async {
+            final Uri url = Uri.parse('https://mbsoftech.com.np/');
+              if (await canLaunchUrl(url)) {
+                await launchUrl(url, mode: LaunchMode.externalApplication);
+              } else {
+                throw 'Could not launch $url';
+              }
+          },
+            child: Text('M & MB Soft Tech',style: TextStyle(color: Colors.white,fontSize: 20))),
+         ] ),
          Text('All Rights Reserved',style: TextStyle(color: Colors.white,fontSize: 18),)    
         ] 
       ),)
